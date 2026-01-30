@@ -2,11 +2,41 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { TitleInput } from './TitleInput';
 import { CategorySelector } from './CategorySelector';
 import { DifficultySelector } from './DifficultySelector';
 import { ContentEditor } from './ContentEditor';
+import { useAutoSave, type SaveStatus } from '@/hooks/use-auto-save';
 import type { Post, CreatePostInput, UpdatePostInput, Category, Difficulty } from '@/lib/types';
+
+function SaveStatusIndicator({ status }: { status: SaveStatus }) {
+  const statusConfig = {
+    idle: { text: '', className: '' },
+    saving: { text: 'Saving...', className: 'text-muted-foreground' },
+    saved: { text: 'Saved', className: 'text-green-600 dark:text-green-500' },
+    unsaved: { text: 'Unsaved changes', className: 'text-amber-600 dark:text-amber-500' },
+  };
+
+  const config = statusConfig[status];
+  if (!config.text) return null;
+
+  return (
+    <span className={`text-sm ${config.className}`}>
+      {config.text}
+    </span>
+  );
+}
 
 interface EditorProps {
   post: Post | null;
@@ -78,13 +108,30 @@ export function Editor({ post, onSave, onDelete, isLoading }: EditorProps) {
       <div className="flex items-center justify-between border-t border-border px-6 py-4">
         <div>
           {post && onDelete && (
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={isLoading}
-            >
-              Delete
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  disabled={isLoading}
+                >
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Post</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete &quot;{post.title}&quot;? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel autoFocus>Cancel</AlertDialogCancel>
+                  <AlertDialogAction variant="destructive" onClick={handleDelete}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
         <Button
