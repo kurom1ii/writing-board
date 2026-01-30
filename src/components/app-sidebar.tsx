@@ -17,9 +17,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import {
   Sidebar,
   SidebarContent,
@@ -30,16 +34,15 @@ import {
   SidebarHeader,
   SidebarInput,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
-  SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
+import { getShortcutDisplay } from "@/hooks/use-keyboard-shortcuts"
 import type { Post, Category, Difficulty } from "@/lib/types"
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -98,6 +101,9 @@ export function AppSidebar({
     return filteredPosts.filter((post) => post.category === category)
   }
 
+  // Get shortcut display string for New Post
+  const newPostShortcut = getShortcutDisplay({ key: 'n', ctrlOrCmd: true })
+
   return (
     <Sidebar collapsible="icon" className="border-r-0" {...props}>
       <SidebarHeader className="gap-3.5 border-b border-sidebar-border p-4 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:items-center">
@@ -118,14 +124,21 @@ export function AppSidebar({
             className="pl-8"
           />
         </div>
-        <Button
-          onClick={onNewPost}
-          size="icon"
-          className="w-full group-data-[collapsible=icon]:size-8"
-        >
-          <Plus className="size-4" />
-          <span className="group-data-[collapsible=icon]:hidden">New Post</span>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={onNewPost}
+              size="icon"
+              className="w-full group-data-[collapsible=icon]:size-8"
+            >
+              <Plus className="size-4" />
+              <span className="group-data-[collapsible=icon]:hidden">New Post</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <span>New Post ({newPostShortcut})</span>
+          </TooltipContent>
+        </Tooltip>
       </SidebarHeader>
 
       <SidebarContent>

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { AppSidebar } from "@/components/app-sidebar"
-import { Editor } from "@/components/editor/Editor"
+import { Editor, EditorRef } from "@/components/editor/Editor"
 import {
   SidebarInset,
   SidebarProvider,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
 import type { Post, CreatePostInput, UpdatePostInput } from "@/lib/types"
 
 export function WritingBoard() {
@@ -17,6 +18,7 @@ export function WritingBoard() {
   const [selectedPost, setSelectedPost] = React.useState<Post | null>(null)
   const [isCreating, setIsCreating] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
+  const editorRef = React.useRef<EditorRef>(null)
 
   // Fetch posts on mount
   React.useEffect(() => {
@@ -42,6 +44,11 @@ export function WritingBoard() {
 
   const handleSelectPost = (post: Post) => {
     setSelectedPost(post)
+    setIsCreating(false)
+  }
+
+  const handleDeselect = () => {
+    setSelectedPost(null)
     setIsCreating(false)
   }
 
@@ -102,6 +109,44 @@ export function WritingBoard() {
     }
   }
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    shortcuts: [
+      {
+        // Ctrl/Cmd + S - Save post
+        key: "s",
+        ctrlOrCmd: true,
+        handler: () => {
+          if ((selectedPost || isCreating) && !isLoading) {
+            editorRef.current?.save()
+          }
+        },
+        preventDefault: true,
+      },
+      {
+        // Ctrl/Cmd + N - New post
+        key: "n",
+        ctrlOrCmd: true,
+        handler: () => {
+          if (!isLoading) {
+            handleNewPost()
+          }
+        },
+        preventDefault: true,
+      },
+      {
+        // Escape - Deselect post
+        key: "Escape",
+        handler: () => {
+          if (!isLoading) {
+            handleDeselect()
+          }
+        },
+        preventDefault: false,
+      },
+    ],
+  })
+
   const showEditor = selectedPost || isCreating
 
   return (
@@ -131,6 +176,7 @@ export function WritingBoard() {
           <div className="flex-1 overflow-hidden">
             {showEditor ? (
               <Editor
+                ref={editorRef}
                 post={selectedPost}
                 onSave={handleSave}
                 onDelete={selectedPost ? handleDelete : undefined}
