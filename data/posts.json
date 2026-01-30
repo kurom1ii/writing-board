@@ -1,0 +1,11 @@
+[
+  {
+    "id": "c699d2b9-dfef-4e37-a8a2-52c6420de0cf",
+    "title": "My First Blog Post",
+    "content": "This is a test post with improved UI.",
+    "category": "blog",
+    "difficulty": "beginner",
+    "createdAt": "2026-01-29T17:14:53.528Z",
+    "updatedAt": "2026-01-29T17:14:53.528Z"
+  }
+]
