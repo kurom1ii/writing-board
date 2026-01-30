@@ -8,7 +8,7 @@ import {
   StickyNote,
   Plus,
   Search,
-  ChevronRight,
+  ChevronDown,
   BookMarked,
 } from "lucide-react"
 
@@ -100,7 +100,7 @@ export function AppSidebar({
 
   return (
     <Sidebar collapsible="icon" className="border-r-0" {...props}>
-      <SidebarHeader className="gap-3.5 border-b border-sidebar-border p-4">
+      <SidebarHeader className="gap-3.5 border-b border-sidebar-border p-4 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:items-center">
         <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <div className="flex size-8 items-center justify-center rounded-lg bg-primary">
             <BookMarked className="size-4 text-primary-foreground" />
@@ -120,8 +120,8 @@ export function AppSidebar({
         </div>
         <Button
           onClick={onNewPost}
-          size="sm"
-          className="w-full group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:p-0"
+          size="icon"
+          className="w-full group-data-[collapsible=icon]:size-8"
         >
           <Plus className="size-4" />
           <span className="group-data-[collapsible=icon]:hidden">New Post</span>
@@ -129,12 +129,12 @@ export function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:items-center">
           <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Categories
           </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
+          <SidebarGroupContent className="group-data-[collapsible=icon]:w-auto">
+            <SidebarMenu className="group-data-[collapsible=icon]:items-center">
               {categories.map((category) => {
                 const categoryPosts = getPostsByCategory(category.id)
                 const Icon = category.icon
@@ -151,16 +151,12 @@ export function AppSidebar({
                           tooltip={category.label}
                           className="font-medium"
                         >
-                          <div className={cn("flex size-5 items-center justify-center rounded-md", category.bgColor)}>
-                            <Icon className={cn("size-3", category.color)} />
-                          </div>
+                          <Icon className="size-4" />
                           <span>{category.label}</span>
-                          <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                          <span className="ml-auto text-[10px] text-muted-foreground">{categoryPosts.length}</span>
+                          <ChevronDown className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
-                      <SidebarMenuBadge className="bg-muted/50 text-muted-foreground text-[10px] font-medium">
-                        {categoryPosts.length}
-                      </SidebarMenuBadge>
                       <CollapsibleContent>
                         <SidebarMenuSub>
                           {categoryPosts.length === 0 ? (
